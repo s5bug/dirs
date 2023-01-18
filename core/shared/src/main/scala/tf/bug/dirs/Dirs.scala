@@ -14,16 +14,7 @@ object Dirs {
   lazy val windows: Windows = WindowsPlatform
   lazy val mac: Mac = MacPlatform
 
-  lazy val platform: Platform = {
-    val osName = System.getProperty("os.name")
-    if(osName.contains("Windows")) {
-      Platform.Windows
-    } else if (osName.contains("Mac")) {
-      Platform.Mac 
-  }  else {
-      Platform.Unknown(osName)
-    }
-  }
+  lazy val platform: Platform = Target.platform
 
   def audio: Option[Path] = platform match {
     case Platform.Windows => this.windows.shGetKnownFolderPath(this.windows.folderIdMusic)

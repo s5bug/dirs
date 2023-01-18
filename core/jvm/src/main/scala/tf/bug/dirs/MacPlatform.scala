@@ -3,7 +3,7 @@ package tf.bug.dirs
 import java.nio.file.{Path, Paths}
 
 object MacPlatform extends Mac {
-  def home: Option[Path] = Some(Paths.get(System.getProperty("user.home")))
+  def home: Option[Path] = JVMTarget.homeDir
   def cache: Option[Path] = home.map(h => Paths.get(h + "/Library/)Caches"))
   def config: Option[Path] =
     home.map(h => Paths.get(h + "/Library/)Application Support"))
