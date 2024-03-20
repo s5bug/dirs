@@ -18,29 +18,41 @@ package tf.bug.dirs
 
 import java.nio.file.Path
 import munit.FunSuite
+import scala.collection.SortedMap
 
 class DirsSuite extends FunSuite {
 
   test("Dirs should not produce exceptions or null") {
-    assert(Dirs.audio.isInstanceOf[Option[Path]])
-    assert(Dirs.cache.isInstanceOf[Option[Path]])
-    assert(Dirs.config.isInstanceOf[Option[Path]])
-    assert(Dirs.configLocal.isInstanceOf[Option[Path]])
-    assert(Dirs.data.isInstanceOf[Option[Path]])
-    assert(Dirs.dataLocal.isInstanceOf[Option[Path]])
-    assert(Dirs.desktop.isInstanceOf[Option[Path]])
-    assert(Dirs.document.isInstanceOf[Option[Path]])
-    assert(Dirs.download.isInstanceOf[Option[Path]])
-    assert(Dirs.executable.isInstanceOf[Option[Path]])
-    assert(Dirs.font.isInstanceOf[Option[Path]])
-    assert(Dirs.home.isInstanceOf[Option[Path]])
-    assert(Dirs.picture.isInstanceOf[Option[Path]])
-    assert(Dirs.preference.isInstanceOf[Option[Path]])
-    assert(Dirs.public.isInstanceOf[Option[Path]])
-    assert(Dirs.runtime.isInstanceOf[Option[Path]])
-    assert(Dirs.state.isInstanceOf[Option[Path]])
-    assert(Dirs.template.isInstanceOf[Option[Path]])
-    assert(Dirs.video.isInstanceOf[Option[Path]])
+    DirsSuite.all.foreach {
+      case (name, producer) =>
+        val result = producer()
+        println(s"$name: $result")
+        assert(result.isInstanceOf[Option[Path]])
+    }
   }
 
+}
+
+object DirsSuite {
+  private final lazy val all: SortedMap[String, () => Option[Path]] = SortedMap(
+    "audio" -> (() => Dirs.audio),
+    "cache" -> (() => Dirs.cache),
+    "config" -> (() => Dirs.config),
+    "configLocal" -> (() => Dirs.configLocal),
+    "data" -> (() => Dirs.data),
+    "dataLocal" -> (() => Dirs.dataLocal),
+    "desktop" -> (() => Dirs.desktop),
+    "document" -> (() => Dirs.document),
+    "download" -> (() => Dirs.download),
+    "executable" -> (() => Dirs.executable),
+    "font" -> (() => Dirs.font),
+    "home" -> (() => Dirs.home),
+    "picture" -> (() => Dirs.picture),
+    "preference" -> (() => Dirs.preference),
+    "public" -> (() => Dirs.public),
+    "runtime" -> (() => Dirs.runtime),
+    "state" -> (() => Dirs.state),
+    "template" -> (() => Dirs.template),
+    "video" -> (() => Dirs.video),
+  )
 }
