@@ -40,10 +40,10 @@ private[dirs] object WindowsPlatform extends Windows {
   private object shell32 {
     @name("SHGetKnownFolderPath")
     def shGetKnownFolderPath(
-      rfid: Ptr[Guid],
-      dwFlags: DWord,
-      hToken: Ptr[Byte],
-      ppszPath: Ptr[Ptr[CWideChar]]
+        rfid: Ptr[Guid],
+        dwFlags: DWord,
+        hToken: Ptr[Byte],
+        ppszPath: Ptr[Ptr[CWideChar]]
     ): CInt = extern
   }
 
@@ -52,20 +52,24 @@ private[dirs] object WindowsPlatform extends Windows {
   private object ole32 {
     @name("CoTaskMemFree")
     def coTaskMemFree(
-      address: Ptr[Byte]
+        address: Ptr[Byte]
     ): Unit = extern
   }
 
   private final def allocateGuid(guid: String): Ptr[Guid] = {
     val ptr: Ptr[Guid] = alloc[Guid]()
     val uuid = UUID.fromString(guid)
-    !ptr.at1 = ((uuid.getMostSignificantBits & 0xFFFFFFFF00000000L) >>> 32).toUInt
-    !ptr.at2 = ((uuid.getMostSignificantBits & 0x00000000FFFF0000L) >>> 16).toUShort
-    !ptr.at3 = ((uuid.getMostSignificantBits & 0x000000000000FFFFL) >>> 0).toUShort
+    !ptr.at1 =
+      ((uuid.getMostSignificantBits & 0xffffffff00000000L) >>> 32).toUInt
+    !ptr.at2 =
+      ((uuid.getMostSignificantBits & 0x00000000ffff0000L) >>> 16).toUShort
+    !ptr.at3 =
+      ((uuid.getMostSignificantBits & 0x000000000000ffffL) >>> 0).toUShort
     (0L to 7L).foreach { idx =>
       val shift = (7L - idx) * 8L
-      val mask = 0xFFL << shift
-      !ptr.at4.at(idx.toInt) = ((uuid.getLeastSignificantBits & mask) >>> shift).toUByte
+      val mask = 0xffL << shift
+      !ptr.at4.at(idx.toInt) =
+        ((uuid.getLeastSignificantBits & mask) >>> shift).toUByte
     }
     ptr
   }
@@ -109,7 +113,7 @@ private[dirs] object WindowsPlatform extends Windows {
     val strBox: Ptr[Ptr[CWideChar]] = stackalloc[Ptr[CWideChar]]()
     val ret: Int = shell32.shGetKnownFolderPath(rfid, 0.toUInt, null, strBox)
     val strAddr: Ptr[CWideChar] = !strBox
-    val result = if(ret == 0) {
+    val result = if (ret == 0) {
       val str = fromCWideString(strAddr, StandardCharsets.UTF_16LE)
       Some(Paths.get(str))
     } else {

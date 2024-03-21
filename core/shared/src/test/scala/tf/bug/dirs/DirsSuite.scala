@@ -23,11 +23,10 @@ import scala.collection.SortedMap
 class DirsSuite extends FunSuite {
 
   test("Dirs should not produce exceptions or null") {
-    DirsSuite.all.foreach {
-      case (name, producer) =>
-        val result = producer()
-        println(s"$name: $result")
-        assert(result.isInstanceOf[Option[Path]])
+    DirsSuite.all.foreach { case (name, producer) =>
+      val result = producer()
+      println(s"$name: $result")
+      assert(result.isInstanceOf[Option[Path]])
     }
   }
 
@@ -53,6 +52,6 @@ object DirsSuite {
     "runtime" -> (() => Dirs.runtime),
     "state" -> (() => Dirs.state),
     "template" -> (() => Dirs.template),
-    "video" -> (() => Dirs.video),
+    "video" -> (() => Dirs.video)
   )
 }

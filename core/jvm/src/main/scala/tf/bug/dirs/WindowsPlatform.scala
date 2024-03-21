@@ -34,7 +34,8 @@ private[dirs] object WindowsPlatform extends Windows {
     FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS)
   )
   private final val shell32 = SymbolLookup.libraryLookup("shell32", arena)
-  private final val getKnownFolderPathAddress = shell32.find("SHGetKnownFolderPath").orElseThrow()
+  private final val getKnownFolderPathAddress =
+    shell32.find("SHGetKnownFolderPath").orElseThrow()
   private final val getKnownFolderPathHandle = linker.downcallHandle(
     getKnownFolderPathAddress,
     FunctionDescriptor.of(
@@ -46,7 +47,8 @@ private[dirs] object WindowsPlatform extends Windows {
     )
   )
   private final val ole32 = SymbolLookup.libraryLookup("Ole32", arena)
-  private final val coTaskMemFreeAddress = ole32.find("CoTaskMemFree").orElseThrow()
+  private final val coTaskMemFreeAddress =
+    ole32.find("CoTaskMemFree").orElseThrow()
   private final val coTaskMemFreeHandle = linker.downcallHandle(
     coTaskMemFreeAddress,
     FunctionDescriptor.ofVoid(ValueLayout.ADDRESS)
@@ -63,16 +65,35 @@ private[dirs] object WindowsPlatform extends Windows {
   private final def allocateGuid(guid: String): MemorySegment = {
     val seg = arena.allocate(guidLayout)
     val uuid = UUID.fromString(guid)
-    guidLayout.varHandle(PathElement.groupElement("data1"))
-      .set(seg, 0L, ((uuid.getMostSignificantBits & 0xFFFFFFFF00000000L) >>> 32).toInt)
-    guidLayout.varHandle(PathElement.groupElement("data2"))
-      .set(seg, 0L, ((uuid.getMostSignificantBits & 0x00000000FFFF0000L) >>> 16).toShort)
-    guidLayout.varHandle(PathElement.groupElement("data3"))
-      .set(seg, 0L, ((uuid.getMostSignificantBits & 0x000000000000FFFFL) >>> 0).toShort)
+    guidLayout
+      .varHandle(PathElement.groupElement("data1"))
+      .set(
+        seg,
+        0L,
+        ((uuid.getMostSignificantBits & 0xffffffff00000000L) >>> 32).toInt
+      )
+    guidLayout
+      .varHandle(PathElement.groupElement("data2"))
+      .set(
+        seg,
+        0L,
+        ((uuid.getMostSignificantBits & 0x00000000ffff0000L) >>> 16).toShort
+      )
+    guidLayout
+      .varHandle(PathElement.groupElement("data3"))
+      .set(
+        seg,
+        0L,
+        ((uuid.getMostSignificantBits & 0x000000000000ffffL) >>> 0).toShort
+      )
     (0L to 7L).foreach { idx =>
       val shift = (7L - idx) * 8L
-      val mask = 0xFFL << shift
-      guidLayout.varHandle(PathElement.groupElement("data4"), PathElement.sequenceElement(idx))
+      val mask = 0xffL << shift
+      guidLayout
+        .varHandle(
+          PathElement.groupElement("data4"),
+          PathElement.sequenceElement(idx)
+        )
         .set(seg, 0L, ((uuid.getLeastSignificantBits & mask) >>> shift).toByte)
     }
     seg
@@ -116,11 +137,13 @@ private[dirs] object WindowsPlatform extends Windows {
   override def shGetKnownFolderPath(rfid: MemorySegment): Option[Path] =
     Using(Arena.ofConfined()) { arena =>
       val strBox: MemorySegment = arena.allocate(ValueLayout.ADDRESS)
-      val ret: Int = getKnownFolderPathHandle.invoke(rfid, 0, MemorySegment.NULL, strBox)
+      val ret: Int =
+        getKnownFolderPathHandle.invoke(rfid, 0, MemorySegment.NULL, strBox)
       val strAddr = strBox.get(ValueLayout.ADDRESS, 0)
       val result = if (ret == 0) {
         val strLen: Int = lstrlenwHandle.invoke(strAddr)
-        val strLayout = MemoryLayout.sequenceLayout(strLen, ValueLayout.JAVA_CHAR)
+        val strLayout =
+          MemoryLayout.sequenceLayout(strLen, ValueLayout.JAVA_CHAR)
         val strBoxLayout = ValueLayout.ADDRESS.withTargetLayout(strLayout)
         val byteBuf: ByteBuffer = strBox.get(strBoxLayout, 0).asByteBuffer()
         val decode: CharBuffer = StandardCharsets.UTF_16LE.decode(byteBuf)
