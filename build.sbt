@@ -21,6 +21,10 @@ ThisBuild / crossScalaVersions := Seq(Scala213, "3.3.3")
 ThisBuild / scalaVersion := Scala213 // the default Scala
 
 ThisBuild / tlJdkRelease := Some(22)
+ThisBuild / githubWorkflowJavaVersions := Seq(
+  JavaSpec.graalvm("22")
+)
+ThisBuild / githubWorkflowOSes ++= Seq("macos-latest", "macos-14", "windows-latest")
 
 lazy val root = tlCrossRootProject.aggregate(core)
 
