@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Aly
+ * Copyright 2024 Aly Cerruti
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package tf.bug.dirs
 import java.lang.foreign.MemoryLayout.PathElement
-import java.lang.foreign.{AddressLayout, Arena, FunctionDescriptor, Linker, MemoryLayout, MemorySegment, SequenceLayout, SymbolLookup, ValueLayout}
-import java.nio.{ByteBuffer, CharBuffer}
+import java.lang.foreign.*
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Path, Paths}
+import java.nio.{ByteBuffer, CharBuffer}
 import java.util.UUID
 import scala.util.Using
 
