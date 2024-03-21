@@ -24,7 +24,11 @@ ThisBuild / tlJdkRelease := Some(22)
 ThisBuild / githubWorkflowJavaVersions := Seq(
   JavaSpec.graalvm("22")
 )
-ThisBuild / githubWorkflowOSes ++= Seq("macos-latest", "macos-14", "windows-latest")
+ThisBuild / githubWorkflowOSes ++= Seq(
+  "macos-latest",
+  "macos-14",
+  "windows-latest"
+)
 
 lazy val root = tlCrossRootProject.aggregate(core)
 
@@ -34,11 +38,12 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(
     name := "dirs",
     libraryDependencies ++= Seq(
-      "org.scalameta" %%% "munit" % "1.0.0-M11" % Test,
+      "org.scalameta" %%% "munit" % "1.0.0-M11" % Test
     ),
     headerEndYear := Some(2024)
   )
 
-lazy val docs = project.in(file("site"))
+lazy val docs = project
+  .in(file("site"))
   .settings(headerEndYear := Some(2024))
   .enablePlugins(TypelevelSitePlugin)
