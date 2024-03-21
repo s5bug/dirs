@@ -4,6 +4,7 @@ ThisBuild / tlBaseVersion := "0.0" // your current series x.y
 ThisBuild / organization := "tf.bug"
 ThisBuild / organizationName := "Aly Cerruti"
 ThisBuild / startYear := Some(2023)
+ThisBuild / headerEndYear := Some(2024)
 ThisBuild / licenses := Seq(License.Apache2)
 ThisBuild / developers := List(
   // your GitHub handle and name
